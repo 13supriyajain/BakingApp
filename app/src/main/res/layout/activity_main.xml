@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto" >
+
+    <data>
+        <import type="android.view.View" />
+
+        <variable
+            name="viewModel"
+            type="com.example.supjain.bakingapp.RecipeViewModel" />
+    </data>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_margin="@dimen/margin_small" >
+
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/recipe_names_recycle_view"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            app:data="@{viewModel.recipeList}"
+            android:visibility="@{viewModel.showRecyclerView ? View.VISIBLE : View.GONE}"/>
+
+        <TextView
+            android:id="@+id/error_text_view"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:text="@{viewModel.errorMsg}"
+            android:visibility="@{viewModel.showErrorMsg ? View.VISIBLE : View.GONE}" />
+
+        <ProgressBar
+            android:id="@+id/progressbar"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:visibility="@{viewModel.showProgressbar ? View.VISIBLE : View.GONE}" />
+
+    </RelativeLayout>
+
+</layout>

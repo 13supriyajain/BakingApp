@@ -1,0 +1,13 @@
+<resources>
+    <string name="app_name">BakingApp</string>
+    <string name="recipe_image_content_desc">Recipe Name Card</string>
+    <string name="dummy_recipe_name">Recipe Name</string>
+    <string name="dummy_recipe_step_text">Recipe Text</string>
+    <string name="dummy_recipe_step_detail_text">Recipe Step Detail Text</string>
+    <string name="previous_step_btn_text">Previous</string>
+    <string name="next_step_btn_text">Next</string>
+
+    <string name="no_connection_err_msg">No internet connection.\nPlease try again later !</string>
+    <string name="no_data_err_msg">No data available !</string>
+    <string name="dummy_serving_size_text">Serves: 8</string>
+</resources>
