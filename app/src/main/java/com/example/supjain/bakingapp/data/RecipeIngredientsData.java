@@ -8,7 +8,6 @@ import com.google.gson.annotations.SerializedName;
 /**
  * This class object holds all the ingredient details for each recipe.
  */
-
 public class RecipeIngredientsData implements Parcelable {
 
     @SerializedName("quantity")

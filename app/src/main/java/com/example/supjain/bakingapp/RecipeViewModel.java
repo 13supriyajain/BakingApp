@@ -3,6 +3,7 @@ package com.example.supjain.bakingapp;
 import android.app.Application;
 import android.arch.lifecycle.AndroidViewModel;
 import android.arch.lifecycle.LiveData;
+import android.databinding.ObservableField;
 
 import com.example.supjain.bakingapp.DB.RecipeRepository;
 import com.example.supjain.bakingapp.data.RecipeData;
@@ -12,26 +13,13 @@ import java.util.List;
 public class RecipeViewModel extends AndroidViewModel {
 
     private RecipeRepository repository;
-    private LiveData<List<RecipeData>> recipeDataList;
-
-    public String errorMsg;
-    public boolean showErrorMsg;
-    public boolean showProgressbar;
-    public boolean showRecyclerView;
-    public List<RecipeData> recipeList;
+    public LiveData<List<RecipeData>> recipeList;
+    public ObservableField<String> errorMsg;
 
     public RecipeViewModel(Application application) {
         super(application);
         repository = new RecipeRepository(application);
-        recipeDataList = repository.getRecipes();
-    }
-
-    LiveData<List<RecipeData>> getAllRecipes() {
-        return recipeDataList;
-    }
-
-    public void setRecipeList(List<RecipeData> list) {
-        this.recipeList = list;
+        recipeList = repository.getRecipes();
     }
 
     public void insertRecipes(List<RecipeData> recipeDataList) {
@@ -39,18 +27,6 @@ public class RecipeViewModel extends AndroidViewModel {
     }
 
     public void setErrorMsg(String errorMsg) {
-        this.errorMsg = errorMsg;
-    }
-
-    public void setShowErrorMsg(boolean showErrorMsg) {
-        this.showErrorMsg = showErrorMsg;
-    }
-
-    public void setShowProgressbar(boolean showProgressbar) {
-        this.showProgressbar = showProgressbar;
-    }
-
-    public void setShowRecyclerView(boolean showRecyclerView) {
-        this.showRecyclerView = showRecyclerView;
+        this.errorMsg = new ObservableField<>(errorMsg);
     }
 }

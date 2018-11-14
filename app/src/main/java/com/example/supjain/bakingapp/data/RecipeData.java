@@ -8,7 +8,10 @@ import android.os.Parcel;
 import android.os.Parcelable;
 import android.support.annotation.NonNull;
 
+import com.example.supjain.bakingapp.RecipeStepsActivity;
 import com.google.gson.annotations.SerializedName;
+
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -116,8 +119,8 @@ public class RecipeData implements Parcelable {
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeInt(recipeId);
         dest.writeString(recipeName);
-        dest.writeTypedList(recipeIngredients);
-        dest.writeTypedList(recipeSteps);
+        dest.writeList(recipeIngredients);
+        dest.writeList(recipeSteps);
         dest.writeInt(recipeServings);
         dest.writeString(recipeImageUrl);
     }
@@ -125,8 +128,8 @@ public class RecipeData implements Parcelable {
     protected RecipeData(Parcel in) {
         recipeId = in.readInt();
         recipeName = in.readString();
-        recipeIngredients = in.readArrayList(null);
-        recipeSteps = in.readArrayList(null);
+        recipeIngredients = in.readArrayList(getClass().getClassLoader());
+        recipeSteps = in.readArrayList(getClass().getClassLoader());
         recipeServings = in.readInt();
         recipeImageUrl = in.readString();
     }
