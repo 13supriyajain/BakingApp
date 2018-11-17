@@ -17,8 +17,6 @@ import retrofit2.http.GET;
  */
 public class RecipeDataUtil {
 
-    private static final String BASE_IMAGE_URL = "https://d17h27t6h515a5.cloudfront.net/topher/2017/April/";
-    private static final String BASE_VIDEO_URL = "https://d17h27t6h515a5.cloudfront.net/topher/2017/April/";
     private static final String QUERY_URL = "https://d17h27t6h515a5.cloudfront.net/topher/2017/May/59121517_baking/";
 
     private static Retrofit retrofitInstance;

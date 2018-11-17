@@ -19,7 +19,6 @@ import com.example.supjain.bakingapp.data.RecipeData;
 public class RecipeStepsFragment extends Fragment {
 
     private RecipeData recipeData;
-    private RecipeStepsAdapterOnClickHandler clickHandler;
     private static final String RECIPE_DATA_SAVED_KEY = "RecipeDataSavedKey";
 
     public RecipeStepsFragment(){}
@@ -34,6 +33,7 @@ public class RecipeStepsFragment extends Fragment {
         View rootView = inflater.inflate(R.layout.fragment_recipe_steps, container, false);
 
         RecyclerView recyclerView = rootView.findViewById(R.id.recipe_steps_recycle_view);
+        RecipeStepsAdapterOnClickHandler clickHandler = (RecipeStepsAdapterOnClickHandler) getActivity();
         RecipeStepsAdapter recipeStepsAdapter = new RecipeStepsAdapter(clickHandler);
         recipeStepsAdapter.setRecipeData(recipeData);
 
@@ -46,10 +46,6 @@ public class RecipeStepsFragment extends Fragment {
 
     public void setRecipeData(RecipeData data) {
         this.recipeData = data;
-    }
-
-    public void setClickHandler(RecipeStepsAdapterOnClickHandler clickHandler) {
-        this.clickHandler = clickHandler;
     }
 
     /**

@@ -10,4 +10,5 @@
     <string name="no_connection_err_msg">No internet connection.\nPlease try again later !</string>
     <string name="no_data_err_msg">No data available !</string>
     <string name="dummy_serving_size_text">Serves: 8</string>
+    <string name="recipe_step_image_text">Recipe Step Image</string>
 </resources>

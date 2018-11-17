@@ -2,4 +2,6 @@
 <resources>
     <dimen name="margin_small">8dp</dimen>
     <dimen name="padding_medium">16dp</dimen>
+    <dimen name="recipe_step_image_width">75dp</dimen>
+    <dimen name="recipe_step_image_height">75dp</dimen>
 </resources>

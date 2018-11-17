@@ -90,13 +90,11 @@ public class RecipeStepsAdapter extends RecyclerView.Adapter<RecipeStepsAdapter.
         if (recipeData != null)
         {
             List<RecipeIngredientsData> ingredients = recipeData.getRecipeIngredients();
-
-            if (ingredients != null || !ingredients.isEmpty())
+            if (ingredients != null && !ingredients.isEmpty())
                 hasIngredientsList = true;
 
             List<RecipeStepsData> steps = recipeData.getRecipeSteps();
-
-            if (steps != null || !steps.isEmpty())
+            if (steps != null && !steps.isEmpty())
                 hasStepsList = true;
         }
         notifyDataSetChanged();
@@ -117,16 +115,16 @@ public class RecipeStepsAdapter extends RecyclerView.Adapter<RecipeStepsAdapter.
     }
 
     public interface RecipeStepsAdapterOnClickHandler {
-        void mClick(RecipeStepsData recipeStepsData);
+        void mClick(int index);
     }
 
     public class RecipeStepsDataAdapterViewHolder extends RecyclerView.ViewHolder
             implements View.OnClickListener {
 
-        public final TextView stepsTextView;
-        public final ImageView rightChevronIcon;
+        final TextView stepsTextView;
+        final ImageView rightChevronIcon;
 
-        public RecipeStepsDataAdapterViewHolder(View view) {
+        RecipeStepsDataAdapterViewHolder(View view) {
             super(view);
             stepsTextView = view.findViewById(R.id.recipe_step_text);
             rightChevronIcon = view.findViewById(R.id.recipe_step_more_btn);
@@ -138,9 +136,9 @@ public class RecipeStepsAdapter extends RecyclerView.Adapter<RecipeStepsAdapter.
             int clickedPosition = getAdapterPosition();
 
             if (hasIngredientsList && clickedPosition != 0)
-                  clickHandler.mClick(recipeData.getRecipeSteps().get(clickedPosition - 1));
+                clickHandler.mClick(clickedPosition - 1);
             else
-                clickHandler.mClick(recipeData.getRecipeSteps().get(clickedPosition));
+                clickHandler.mClick(clickedPosition);
         }
     }
 }
