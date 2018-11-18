@@ -14,20 +14,23 @@
     <android.support.v7.widget.CardView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_margin="@dimen/margin_small"
         app:cardBackgroundColor="@android:color/white">
 
         <LinearLayout
-        android:orientation="vertical"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content">
+            android:orientation="vertical"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/margin_small">
 
         <ImageView
-            android:layout_width="220dp"
-            android:layout_height="220dp"
+            android:layout_width="180dp"
+            android:layout_height="180dp"
             android:id="@+id/recipe_name_image"
             app:imageUrl="@{recipe.recipeImageUrl}"
             app:error="@{@drawable/ic_no_image}"
             android:scaleType="center"
+            android:layout_gravity="center"
             android:contentDescription="@string/recipe_image_content_desc"/>
 
         <TextView
@@ -37,7 +40,8 @@
             android:layout_marginTop="@dimen/margin_small"
             tools:text="@string/dummy_recipe_name"
             android:textAppearance="?android:textAppearanceMedium"
-            android:textColor="@color/colorPrimary"
+            android:textStyle="bold"
+            android:textColor="@color/colorPrimaryDark"
             android:gravity="center"
             android:text="@{recipe.recipeName}"/>
 
@@ -45,11 +49,11 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:id="@+id/recipe_serves_text"
-            android:layout_marginTop="@dimen/margin_small"
             tools:text="@string/dummy_serving_size_text"
             android:gravity="center"
-            android:textAppearance="?android:textAppearanceSmall"
-            android:text="@{Integer.toString(recipe.recipeServings)}"/>
+            android:textColor="@color/colorPrimary"
+            android:textAppearance="?android:textAppearanceMedium"
+            android:text="@{`Serves: `+ Integer.toString(recipe.recipeServings)}"/>
 
         </LinearLayout>
 

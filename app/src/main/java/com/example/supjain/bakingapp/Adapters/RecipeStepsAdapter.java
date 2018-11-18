@@ -1,18 +1,23 @@
 package com.example.supjain.bakingapp.Adapters;
 
+import android.content.Context;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
 import android.widget.ImageView;
+import android.widget.ListView;
 import android.widget.TextView;
 
 import com.example.supjain.bakingapp.R;
+import com.example.supjain.bakingapp.Util.RecipeDataUtil;
 import com.example.supjain.bakingapp.data.RecipeData;
 import com.example.supjain.bakingapp.data.RecipeIngredientsData;
 import com.example.supjain.bakingapp.data.RecipeStepsData;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -20,6 +25,7 @@ import java.util.List;
  */
 public class RecipeStepsAdapter extends RecyclerView.Adapter<RecipeStepsAdapter.RecipeStepsDataAdapterViewHolder> {
 
+    private Context context;
     private RecipeData recipeData;
     private boolean hasIngredientsList;
     private boolean hasStepsList;
@@ -32,7 +38,8 @@ public class RecipeStepsAdapter extends RecyclerView.Adapter<RecipeStepsAdapter.
     @NonNull
     @Override
     public RecipeStepsDataAdapterViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(parent.getContext())
+        this.context = parent.getContext();
+        View view = LayoutInflater.from(context)
                 .inflate(R.layout.recipe_steps_list_item, parent, false);
         return new RecipeStepsDataAdapterViewHolder(view);
     }
@@ -41,47 +48,30 @@ public class RecipeStepsAdapter extends RecyclerView.Adapter<RecipeStepsAdapter.
     public void onBindViewHolder(@NonNull RecipeStepsDataAdapterViewHolder holder, int position) {
         int viewPosition = holder.getAdapterPosition();
 
-        int showRightChevron = View.VISIBLE;
-        List<RecipeStepsData> steps = recipeData.getRecipeSteps();
+        List<RecipeStepsData> steps;
         // If there is no list of ingredient available, then directly start displaying list of steps.
-        if (!hasIngredientsList && hasStepsList)
-            holder.stepsTextView.setText(steps.get(viewPosition).getStepShortDescription());
-        // Else set list of Ingredients in the first TextView of the recycler view,
-        // and then list of steps afterwards.
-        else if (hasIngredientsList && hasStepsList) {
-            if (viewPosition == 0) {
-                String ingredientsListTextValue = getIngredientsListText();
-                holder.stepsTextView.setText(ingredientsListTextValue);
-                showRightChevron = View.GONE;
+        if (!hasIngredientsList) {
+            if (hasStepsList) {
+                steps = recipeData.getRecipeSteps();
+                holder.displayStep(steps.get(viewPosition).getStepShortDescription());
             }
             else
-                holder.stepsTextView.setText(steps.get(viewPosition - 1).getStepShortDescription());
-        } else if (hasIngredientsList && !hasStepsList) {
-            if (viewPosition == 0) {
-                String ingredientsListTextValue = getIngredientsListText();
-                holder.stepsTextView.setText(ingredientsListTextValue);
-                showRightChevron = View.GONE;
-            }
-        } else {
-            holder.stepsTextView.setText(R.string.no_data_err_msg);
-            showRightChevron = View.GONE;
+                holder.displayError(context.getResources().getString(R.string.no_data_err_msg));
         }
-
-        holder.rightChevronIcon.setVisibility(showRightChevron);
-    }
-
-    // Iterate over list of ingredients to form a single string object,
-    // holding all ingredients information, separated by appropriate delimiters.
-    private String getIngredientsListText() {
-        List<RecipeIngredientsData> recipeIngredients = recipeData.getRecipeIngredients();
-
-        String ingredientsListText = "Ingredients:";
-        for (RecipeIngredientsData ingredientsData : recipeIngredients)
-            ingredientsListText = ingredientsListText + "\n\t\t\t" +
-                    ingredientsData.getIngredientName() + " - " +
-                    ingredientsData.getIngredientQuantity() + " " +
-                    ingredientsData.getIngredientMeasure();
-        return ingredientsListText;
+        // Else set list of Ingredients in the first TextView of the recycler view,
+        // and then list of steps afterwards.
+        else {
+            if (viewPosition == 0)
+                holder.displayIngredients(context, recipeData.getRecipeIngredients());
+            else {
+                if (hasStepsList) {
+                    steps = recipeData.getRecipeSteps();
+                    holder.displayStep(steps.get(viewPosition - 1).getStepShortDescription());
+                }
+                else
+                    holder.displayError(context.getResources().getString(R.string.no_data_err_msg));
+            }
+        }
     }
 
     public void setRecipeData(RecipeData data)
@@ -123,11 +113,13 @@ public class RecipeStepsAdapter extends RecyclerView.Adapter<RecipeStepsAdapter.
 
         final TextView stepsTextView;
         final ImageView rightChevronIcon;
+        final ListView ingredientsListView;
 
         RecipeStepsDataAdapterViewHolder(View view) {
             super(view);
             stepsTextView = view.findViewById(R.id.recipe_step_text);
             rightChevronIcon = view.findViewById(R.id.recipe_step_more_btn);
+            ingredientsListView = view.findViewById(R.id.recipe_ingredients_list);
             view.setOnClickListener(this);
         }
 
@@ -139,6 +131,35 @@ public class RecipeStepsAdapter extends RecyclerView.Adapter<RecipeStepsAdapter.
                 clickHandler.mClick(clickedPosition - 1);
             else
                 clickHandler.mClick(clickedPosition);
+        }
+
+        private void setupListView(Context context, List<RecipeIngredientsData> data) {
+            ArrayList<String> ingredientsList =
+                    RecipeDataUtil.getListOfIngredients(data);
+            ArrayAdapter adapter = new ArrayAdapter<>(context,
+                    android.R.layout.simple_list_item_1, ingredientsList);
+            ingredientsListView.setAdapter(adapter);
+        }
+
+        void displayIngredients(Context context, List<RecipeIngredientsData> data) {
+            setupListView(context, data);
+            ingredientsListView.setVisibility(View.VISIBLE);
+            stepsTextView.setVisibility(View.GONE);
+            rightChevronIcon.setVisibility(View.GONE);
+        }
+
+        void displayStep(String stepText) {
+            stepsTextView.setText(stepText);
+            ingredientsListView.setVisibility(View.GONE);
+            stepsTextView.setVisibility(View.VISIBLE);
+            rightChevronIcon.setVisibility(View.VISIBLE);
+        }
+
+        void displayError(String errMsg) {
+            stepsTextView.setText(errMsg);
+            stepsTextView.setVisibility(View.VISIBLE);
+            ingredientsListView.setVisibility(View.GONE);
+            rightChevronIcon.setVisibility(View.GONE);
         }
     }
 }

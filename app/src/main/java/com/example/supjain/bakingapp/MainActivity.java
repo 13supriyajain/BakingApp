@@ -1,6 +1,8 @@
 package com.example.supjain.bakingapp;
 
+import android.appwidget.AppWidgetManager;
 import android.arch.lifecycle.ViewModelProviders;
+import android.content.ComponentName;
 import android.content.Intent;
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
@@ -10,6 +12,7 @@ import android.support.v7.widget.RecyclerView;
 
 import com.example.supjain.bakingapp.Adapters.RecipeDataAdapter;
 import com.example.supjain.bakingapp.Util.RecipeDataUtil;
+import com.example.supjain.bakingapp.Widget.RecipeWidgetProvider;
 import com.example.supjain.bakingapp.data.RecipeData;
 import com.example.supjain.bakingapp.databinding.ActivityMainBinding;
 
@@ -24,10 +27,24 @@ import retrofit2.Retrofit;
 public class MainActivity extends AppCompatActivity implements RecipeDataAdapter.RecipeAdapterOnClickHandler {
 
     private RecipeViewModel recipeViewModel;
+    private int appWidgetId = AppWidgetManager.INVALID_APPWIDGET_ID;
+    private boolean widgetConfigCall;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        Intent intent = getIntent();
+        Bundle extras = intent.getExtras();
+        if (extras != null) {
+            appWidgetId = extras.getInt(AppWidgetManager.EXTRA_APPWIDGET_ID,
+                    AppWidgetManager.INVALID_APPWIDGET_ID);
+            setResult(RESULT_CANCELED);
+            if (appWidgetId == AppWidgetManager.INVALID_APPWIDGET_ID)
+                widgetConfigCall = false;
+            else
+                widgetConfigCall = true;
+        }
 
         ActivityMainBinding binding = DataBindingUtil.setContentView(this, R.layout.activity_main);
         binding.setLifecycleOwner(this);
@@ -81,8 +98,22 @@ public class MainActivity extends AppCompatActivity implements RecipeDataAdapter
 
     @Override
     public void mClick(RecipeData data) {
-        Intent intent = new Intent(this, RecipeStepsActivity.class);
-        intent.putExtra(RecipeStepsActivity.RECIPE_DATA_OBJ_KEY, data);
-        startActivity(intent);
+        // Update all widgets
+        AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(this);
+        int[] appWidgetIds = appWidgetManager.getAppWidgetIds(new ComponentName(this, RecipeWidgetProvider.class));
+        RecipeWidgetProvider.updateAppWidgets(this, appWidgetManager, data, appWidgetIds);
+
+        if (widgetConfigCall) {
+            // Finish configuring widget
+            Intent resultValue = new Intent();
+            resultValue.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, appWidgetId);
+            setResult(RESULT_OK, resultValue);
+            finish();
+        } else {
+            // Start RecipeStepsActivity to display selected recipe's steps and ingredients
+            Intent intent = new Intent(this, RecipeStepsActivity.class);
+            intent.putExtra(RecipeStepsActivity.RECIPE_DATA_OBJ_KEY, data);
+            startActivity(intent);
+        }
     }
 }

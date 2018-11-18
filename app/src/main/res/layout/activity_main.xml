@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto" >
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
 
     <data>
         <import type="android.view.View" />
@@ -13,7 +14,8 @@
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_margin="@dimen/margin_small" >
+        android:background="@color/colorPrimary"
+        android:padding="@dimen/margin_small" >
 
         <android.support.v7.widget.RecyclerView
             android:id="@+id/recipe_names_recycle_view"
@@ -26,6 +28,8 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerInParent="true"
+            android:textColor="@android:color/white"
+            tools:text="@string/no_data_err_msg"
             android:text="@{viewModel.errorMsg}"
             android:visibility="@{viewModel.errorMsg != null ? View.VISIBLE : View.GONE}" />
 

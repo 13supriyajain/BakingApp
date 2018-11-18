@@ -25,6 +25,11 @@ public class RecipeIngredientsData implements Parcelable {
         this.ingredientName = ingredientName;
     }
 
+    @Override
+    public String toString() {
+        return ingredientName + " - " + ingredientQuantity + " " + ingredientMeasure;
+    }
+
     public float getIngredientQuantity() {
         return ingredientQuantity;
     }
