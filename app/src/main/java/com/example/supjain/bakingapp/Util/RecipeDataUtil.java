@@ -1,10 +1,12 @@
 package com.example.supjain.bakingapp.Util;
 
 import android.content.Context;
+import android.content.res.Resources;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.util.DisplayMetrics;
 
+import com.example.supjain.bakingapp.R;
 import com.example.supjain.bakingapp.data.RecipeData;
 import com.example.supjain.bakingapp.data.RecipeIngredientsData;
 
@@ -44,10 +46,12 @@ public class RecipeDataUtil {
 
     // Iterate over list of RecipeIngredientsData Object and convert them into list of strings,
     // containing information about each ingredient.
-    public static ArrayList<String> getListOfIngredients(List<RecipeIngredientsData> dataList){
+    public static ArrayList<String> getListOfIngredients(Resources resource,
+                                                         List<RecipeIngredientsData> dataList){
         ArrayList<String> ingredientsList = null;
         if (dataList != null && !dataList.isEmpty()) {
             ingredientsList = new ArrayList<>();
+            ingredientsList.add(resource.getString(R.string.ingredients_list_title_text));
             for (RecipeIngredientsData ingredientsData : dataList)
                 ingredientsList.add(ingredientsData.toString());
         }

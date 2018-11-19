@@ -11,4 +11,7 @@
     <string name="no_data_err_msg">No data available !</string>
     <string name="dummy_serving_size_text">Serves: </string>
     <string name="recipe_step_image_text">Recipe Step Image</string>
+    <string name="ingredients_list_title_text">INGREDIENTS:</string>
+    <string name="chevron_img_cont_desc">More details</string>
+    <string name="steps_list_title_text">STEPS:</string>
 </resources>

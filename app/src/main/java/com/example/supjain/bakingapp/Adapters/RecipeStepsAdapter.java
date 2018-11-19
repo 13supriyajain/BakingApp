@@ -1,14 +1,17 @@
 package com.example.supjain.bakingapp.Adapters;
 
 import android.content.Context;
+import android.content.res.Resources;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.ListView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.example.supjain.bakingapp.R;
@@ -26,9 +29,12 @@ import java.util.List;
 public class RecipeStepsAdapter extends RecyclerView.Adapter<RecipeStepsAdapter.RecipeStepsDataAdapterViewHolder> {
 
     private Context context;
+    private Resources resources;
     private RecipeData recipeData;
     private boolean hasIngredientsList;
     private boolean hasStepsList;
+    private int lastSelectedPositionId;
+    private View lastSelectedView;
     private RecipeStepsAdapterOnClickHandler clickHandler;
 
     public RecipeStepsAdapter(RecipeStepsAdapterOnClickHandler clickHandler) {
@@ -39,6 +45,7 @@ public class RecipeStepsAdapter extends RecyclerView.Adapter<RecipeStepsAdapter.
     @Override
     public RecipeStepsDataAdapterViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         this.context = parent.getContext();
+        this.resources = context.getResources();
         View view = LayoutInflater.from(context)
                 .inflate(R.layout.recipe_steps_list_item, parent, false);
         return new RecipeStepsDataAdapterViewHolder(view);
@@ -53,29 +60,56 @@ public class RecipeStepsAdapter extends RecyclerView.Adapter<RecipeStepsAdapter.
         if (!hasIngredientsList) {
             if (hasStepsList) {
                 steps = recipeData.getRecipeSteps();
-                holder.displayStep(steps.get(viewPosition).getStepShortDescription());
+                String stepInfo;
+                if (viewPosition == 0)
+                    stepInfo = resources.getString(R.string.steps_list_title_text) +
+                            "\t" + steps.get(viewPosition).getStepShortDescription();
+                else
+                    stepInfo = viewPosition + ".) " +
+                        steps.get(viewPosition).getStepShortDescription();
+                holder.displayStep(stepInfo);
+
+                if (viewPosition == lastSelectedPositionId) {
+                    if (lastSelectedView != null)
+                        lastSelectedView.setSelected(false);
+                    lastSelectedView = holder.wrapperView;
+                    lastSelectedView.setSelected(true);
+                }
             }
             else
-                holder.displayError(context.getResources().getString(R.string.no_data_err_msg));
+                holder.displayError(resources.getString(R.string.no_data_err_msg));
         }
         // Else set list of Ingredients in the first TextView of the recycler view,
         // and then list of steps afterwards.
         else {
             if (viewPosition == 0)
-                holder.displayIngredients(context, recipeData.getRecipeIngredients());
+                holder.displayIngredients(recipeData.getRecipeIngredients());
             else {
                 if (hasStepsList) {
                     steps = recipeData.getRecipeSteps();
-                    holder.displayStep(steps.get(viewPosition - 1).getStepShortDescription());
+                    String stepInfo;
+                    if (viewPosition == 1)
+                        stepInfo = resources.getString(R.string.steps_list_title_text) +
+                                "\t" + steps.get(viewPosition - 1).getStepShortDescription();
+                    else
+                        stepInfo = (viewPosition - 1) + ".) " +
+                            steps.get(viewPosition - 1).getStepShortDescription();
+                    holder.displayStep(stepInfo);
+
+                    if (viewPosition == lastSelectedPositionId + 1) {
+                        if (lastSelectedView != null)
+                            lastSelectedView.setSelected(false);
+                        lastSelectedView = holder.wrapperView;
+                        lastSelectedView.setSelected(true);
+                    }
                 }
                 else
-                    holder.displayError(context.getResources().getString(R.string.no_data_err_msg));
+                    holder.displayError(resources.getString(R.string.no_data_err_msg));
             }
         }
     }
 
-    public void setRecipeData(RecipeData data)
-    {
+    public void setRecipeData(RecipeData data) {
         this.recipeData = data;
         if (recipeData != null)
         {
@@ -88,6 +122,10 @@ public class RecipeStepsAdapter extends RecyclerView.Adapter<RecipeStepsAdapter.
                 hasStepsList = true;
         }
         notifyDataSetChanged();
+    }
+
+    public void setLastSelectedPositionId(int id) {
+        this.lastSelectedPositionId = id;
     }
 
     @Override
@@ -114,17 +152,41 @@ public class RecipeStepsAdapter extends RecyclerView.Adapter<RecipeStepsAdapter.
         final TextView stepsTextView;
         final ImageView rightChevronIcon;
         final ListView ingredientsListView;
+        final RelativeLayout wrapperView;
 
         RecipeStepsDataAdapterViewHolder(View view) {
             super(view);
             stepsTextView = view.findViewById(R.id.recipe_step_text);
             rightChevronIcon = view.findViewById(R.id.recipe_step_more_btn);
             ingredientsListView = view.findViewById(R.id.recipe_ingredients_list);
+            wrapperView = view.findViewById(R.id.recipe_step_wrapper);
             view.setOnClickListener(this);
+
+            ingredientsListView.setOnTouchListener(new ListView.OnTouchListener() {
+                @Override
+                public boolean onTouch(View v, MotionEvent event) {
+                    int action = event.getAction();
+                    switch (action) {
+                        case MotionEvent.ACTION_DOWN:
+                            // Disallow ScrollView to intercept touch events.
+                            v.getParent().requestDisallowInterceptTouchEvent(true);
+                            break;
+
+                        case MotionEvent.ACTION_UP:
+                            // Allow ScrollView to intercept touch events.
+                            v.getParent().requestDisallowInterceptTouchEvent(false);
+                            break;
+                    }
+
+                    // Handle ListView touch events.
+                    v.onTouchEvent(event);
+                    return true;
+                }
+            });
         }
 
         @Override
-        public void onClick (View v) {
+        public void onClick (View view) {
             int clickedPosition = getAdapterPosition();
 
             if (hasIngredientsList && clickedPosition != 0)
@@ -133,16 +195,16 @@ public class RecipeStepsAdapter extends RecyclerView.Adapter<RecipeStepsAdapter.
                 clickHandler.mClick(clickedPosition);
         }
 
-        private void setupListView(Context context, List<RecipeIngredientsData> data) {
+        private void setupListView(List<RecipeIngredientsData> data) {
             ArrayList<String> ingredientsList =
-                    RecipeDataUtil.getListOfIngredients(data);
+                    RecipeDataUtil.getListOfIngredients(resources, data);
             ArrayAdapter adapter = new ArrayAdapter<>(context,
                     android.R.layout.simple_list_item_1, ingredientsList);
             ingredientsListView.setAdapter(adapter);
         }
 
-        void displayIngredients(Context context, List<RecipeIngredientsData> data) {
-            setupListView(context, data);
+        void displayIngredients(List<RecipeIngredientsData> data) {
+            setupListView(data);
             ingredientsListView.setVisibility(View.VISIBLE);
             stepsTextView.setVisibility(View.GONE);
             rightChevronIcon.setVisibility(View.GONE);

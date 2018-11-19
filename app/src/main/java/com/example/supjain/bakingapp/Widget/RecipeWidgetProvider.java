@@ -5,6 +5,7 @@ import android.appwidget.AppWidgetManager;
 import android.appwidget.AppWidgetProvider;
 import android.content.Context;
 import android.content.Intent;
+import android.support.v4.app.TaskStackBuilder;
 import android.widget.RemoteViews;
 
 import com.example.supjain.bakingapp.R;
@@ -21,8 +22,15 @@ public class RecipeWidgetProvider extends AppWidgetProvider {
         // Create an Intent to launch RecipeStepsActivity when clicked
         Intent intent = new Intent(context, RecipeStepsActivity.class);
         intent.putExtra(RecipeStepsActivity.RECIPE_DATA_OBJ_KEY, data);
-        PendingIntent pendingIntent = PendingIntent.getActivity(context, appWidgetId, intent,
-                PendingIntent.FLAG_UPDATE_CURRENT);
+
+       // Use TaskStackBuilder to build the back stack and get the PendingIntent
+        PendingIntent pendingIntent =
+                TaskStackBuilder.create(context)
+                        // add all of RecipeStepsActivity's parents to the stack (MainActivity),
+                        // followed by RecipeStepsActivity itself
+                        .addNextIntentWithParentStack(intent)
+                        .getPendingIntent(appWidgetId, PendingIntent.FLAG_UPDATE_CURRENT);
+
         // Construct the RemoteViews object
         RemoteViews views = new RemoteViews(context.getPackageName(), R.layout.recipe_widget);
         // Widgets allow click handlers to only launch pending intents

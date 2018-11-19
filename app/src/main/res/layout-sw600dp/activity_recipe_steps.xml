@@ -9,12 +9,12 @@
 
     <FrameLayout
         android:id="@+id/step_list_fragment"
-        android:layout_width="400dp"
+        android:layout_width="@dimen/master_list_width"
         android:layout_height="match_parent" />
 
     <!-- A small divider -->
     <View
-        android:layout_width="1dp"
+        android:layout_width="@dimen/divider_view_width"
         android:layout_height="match_parent"
         android:background="@android:color/darker_gray" />
 

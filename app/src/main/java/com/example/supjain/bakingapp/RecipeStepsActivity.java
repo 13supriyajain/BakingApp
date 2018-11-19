@@ -2,6 +2,7 @@ package com.example.supjain.bakingapp;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
 
@@ -14,8 +15,10 @@ import java.util.List;
 public class RecipeStepsActivity extends AppCompatActivity implements RecipeStepsAdapter.RecipeStepsAdapterOnClickHandler {
 
     public static final String RECIPE_DATA_OBJ_KEY = "RecipeDataObj";
-    private RecipeData recipeData;
+    private static final String RECIPE_STEPS_FRAGMENT_TAG = "RecipeStepsFragment";
+    private static final String RECIPE_STEPS_DETAILS_FRAGMENT_TAG = "RecipeStepDetailsFragment";
 
+    private RecipeData recipeData;
     private boolean isTwoPaneDisplay;
 
     @Override
@@ -53,6 +56,8 @@ public class RecipeStepsActivity extends AppCompatActivity implements RecipeStep
     }
 
     public void replaceStepDetailsFragment(int currentRecipeStepIndex, List<RecipeStepsData> dataList, int containerId) {
+        setSelectedRecipeStepIndex(currentRecipeStepIndex);
+
         RecipeStepDetailsFragment recipeStepDetailsFragment = new RecipeStepDetailsFragment();
         recipeStepDetailsFragment.setRecipeStepsDataList(dataList);
         recipeStepDetailsFragment.setCurrentRecipeIndex(currentRecipeStepIndex);
@@ -60,7 +65,8 @@ public class RecipeStepsActivity extends AppCompatActivity implements RecipeStep
 
         FragmentManager fragmentManager = getSupportFragmentManager();
         fragmentManager.beginTransaction()
-                .replace(containerId, recipeStepDetailsFragment)
+                .replace(containerId, recipeStepDetailsFragment, RECIPE_STEPS_DETAILS_FRAGMENT_TAG)
+                .addToBackStack(null)
                 .commit();
     }
 
@@ -70,7 +76,23 @@ public class RecipeStepsActivity extends AppCompatActivity implements RecipeStep
 
         FragmentManager fragmentManager = getSupportFragmentManager();
         fragmentManager.beginTransaction()
-                .add(containerId, recipeStepsFragment)
+                .add(containerId, recipeStepsFragment, RECIPE_STEPS_FRAGMENT_TAG)
                 .commit();
+    }
+
+    public void setSelectedRecipeStepIndex(int index) {
+        Fragment fragment = getSupportFragmentManager().findFragmentByTag(RECIPE_STEPS_FRAGMENT_TAG);
+        if (fragment instanceof RecipeStepsFragment)
+            ((RecipeStepsFragment) fragment).setSelectedRecipeStepIndex(index);
+    }
+
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        Fragment fragment = getSupportFragmentManager().findFragmentByTag(RECIPE_STEPS_DETAILS_FRAGMENT_TAG);
+        if (fragment instanceof RecipeStepDetailsFragment) {
+            int stepIndex = ((RecipeStepDetailsFragment) fragment).getCurrentRecipeIndex();
+            setSelectedRecipeStepIndex(stepIndex);
+        }
     }
 }

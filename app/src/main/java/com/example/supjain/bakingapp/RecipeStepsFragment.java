@@ -15,11 +15,14 @@ import com.example.supjain.bakingapp.data.RecipeData;
 /**
  * This fragment inflates view for holding recipe ingredients list and steps list.
  */
-
 public class RecipeStepsFragment extends Fragment {
 
-    private RecipeData recipeData;
     private static final String RECIPE_DATA_SAVED_KEY = "RecipeDataSavedKey";
+    private static final String RECIPE_STEP_INDEX_SAVED_KEY = "RecipeStepIndexSavedKey";
+
+    private RecipeData recipeData;
+    private int selectedRecipeStepIndex;
+    private RecipeStepsAdapter recipeStepsAdapter;
 
     public RecipeStepsFragment(){}
 
@@ -28,24 +31,35 @@ public class RecipeStepsFragment extends Fragment {
 
         if(savedInstanceState != null) {
             this.recipeData = savedInstanceState.getParcelable(RECIPE_DATA_SAVED_KEY);
+            this.selectedRecipeStepIndex = savedInstanceState.getInt(RECIPE_STEP_INDEX_SAVED_KEY);
         }
 
         View rootView = inflater.inflate(R.layout.fragment_recipe_steps, container, false);
 
         RecyclerView recyclerView = rootView.findViewById(R.id.recipe_steps_recycle_view);
         RecipeStepsAdapterOnClickHandler clickHandler = (RecipeStepsAdapterOnClickHandler) getActivity();
-        RecipeStepsAdapter recipeStepsAdapter = new RecipeStepsAdapter(clickHandler);
+        recipeStepsAdapter = new RecipeStepsAdapter(clickHandler);
         recipeStepsAdapter.setRecipeData(recipeData);
+        recipeStepsAdapter.setLastSelectedPositionId(selectedRecipeStepIndex);
 
         LinearLayoutManager layoutManager = new LinearLayoutManager(getContext());
         recyclerView.setLayoutManager(layoutManager);
         recyclerView.setAdapter(recipeStepsAdapter);
         recyclerView.setHasFixedSize(true);
+
         return rootView;
     }
 
     public void setRecipeData(RecipeData data) {
         this.recipeData = data;
+    }
+
+    public void setSelectedRecipeStepIndex(int selectedRecipeStepIndex) {
+        this.selectedRecipeStepIndex = selectedRecipeStepIndex;
+        if (recipeStepsAdapter != null) {
+            recipeStepsAdapter.setLastSelectedPositionId(selectedRecipeStepIndex);
+            recipeStepsAdapter.notifyDataSetChanged();
+        }
     }
 
     /**
@@ -54,5 +68,6 @@ public class RecipeStepsFragment extends Fragment {
     @Override
     public void onSaveInstanceState(Bundle currentState) {
         currentState.putParcelable(RECIPE_DATA_SAVED_KEY, recipeData);
+        currentState.putInt(RECIPE_STEP_INDEX_SAVED_KEY, selectedRecipeStepIndex);
     }
 }

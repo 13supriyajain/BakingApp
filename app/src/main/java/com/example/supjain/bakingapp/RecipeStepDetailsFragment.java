@@ -1,14 +1,15 @@
 package com.example.supjain.bakingapp;
 
-import android.annotation.SuppressLint;
 import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.text.TextUtils;
 import android.util.DisplayMetrics;
 import android.view.LayoutInflater;
+import android.view.SurfaceView;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
@@ -23,6 +24,7 @@ import com.google.android.exoplayer2.SimpleExoPlayer;
 import com.google.android.exoplayer2.source.ExtractorMediaSource;
 import com.google.android.exoplayer2.source.MediaSource;
 import com.google.android.exoplayer2.trackselection.DefaultTrackSelector;
+import com.google.android.exoplayer2.ui.AspectRatioFrameLayout;
 import com.google.android.exoplayer2.ui.PlayerView;
 import com.google.android.exoplayer2.upstream.DefaultHttpDataSourceFactory;
 import com.google.android.exoplayer2.util.Util;
@@ -35,7 +37,6 @@ import java.util.List;
  * This fragment inflates layout file to display recipe step details like
  * recipe video, recipe description along with thumbnail etc.
  */
-
 public class RecipeStepDetailsFragment extends Fragment {
 
     private static final String RECIPE_STEP_DATA_KEY = "RecipeStepDataKey";
@@ -55,7 +56,7 @@ public class RecipeStepDetailsFragment extends Fragment {
     private Resources resources;
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
         if (savedInstanceState != null) {
             this.recipeStepsDataList = savedInstanceState.getParcelableArrayList(RECIPE_STEP_DATA_KEY);
@@ -73,7 +74,7 @@ public class RecipeStepDetailsFragment extends Fragment {
         playerView = rootView.findViewById(R.id.video_player);
         ViewGroup.LayoutParams params = playerView.getLayoutParams();
         if (resources.getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE)
-            params.height = ViewGroup.LayoutParams.WRAP_CONTENT;
+            params.height = ViewGroup.LayoutParams.MATCH_PARENT;
         else
             params.height = calculateVideoPlayerHeight();
         playerView.setLayoutParams(params);
@@ -96,43 +97,49 @@ public class RecipeStepDetailsFragment extends Fragment {
         else
             stepImageView.setVisibility(View.GONE);
 
+
         Button previousStepButton = rootView.findViewById(R.id.previous_step_btn);
-        if (currentRecipeIndex == 0) {
-            previousStepButton.setEnabled(false);
-            previousStepButton.setBackgroundColor(resources.getColor(R.color.gray));
-            previousStepButton.setTextColor(resources.getColor(R.color.black));
-        }
-
-        previousStepButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (isTwoPaneDisplay)
-                    parentActivity.replaceStepDetailsFragment(currentRecipeIndex - 1,
-                        recipeStepsDataList, R.id.step_detail_fragment);
-                else
-                    parentActivity.replaceStepDetailsFragment(currentRecipeIndex - 1,
-                            recipeStepsDataList, R.id.recipe_steps_fragment_container);
-            }
-        });
-
         Button nextStepButton = rootView.findViewById(R.id.next_step_btn);
-        if (currentRecipeIndex == recipeStepsDataList.size() - 1) {
-            nextStepButton.setEnabled(false);
-            nextStepButton.setBackgroundColor(resources.getColor(R.color.gray));
-            nextStepButton.setTextColor(resources.getColor(R.color.black));
-        }
 
-        nextStepButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (isTwoPaneDisplay)
-                    parentActivity.replaceStepDetailsFragment(currentRecipeIndex + 1,
-                        recipeStepsDataList, R.id.step_detail_fragment);
-                else
+        if (isTwoPaneDisplay) {
+             previousStepButton.setVisibility(View.GONE);
+             nextStepButton.setVisibility(View.GONE);
+        } else {
+            previousStepButton.setVisibility(View.VISIBLE);
+            nextStepButton.setVisibility(View.VISIBLE);
+
+            if (currentRecipeIndex == 0) {
+                previousStepButton.setEnabled(false);
+                previousStepButton.setBackgroundColor(resources.getColor(R.color.gray));
+                previousStepButton.setTextColor(resources.getColor(R.color.black));
+                previousStepButton.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_previous_black,
+                        0, 0, 0);
+            }
+
+            previousStepButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    parentActivity.replaceStepDetailsFragment(currentRecipeIndex - 1,
+                            recipeStepsDataList, R.id.recipe_steps_fragment_container);
+                }
+            });
+
+            if (currentRecipeIndex == recipeStepsDataList.size() - 1) {
+                nextStepButton.setEnabled(false);
+                nextStepButton.setBackgroundColor(resources.getColor(R.color.gray));
+                nextStepButton.setTextColor(resources.getColor(R.color.black));
+                nextStepButton.setCompoundDrawablesWithIntrinsicBounds(0, 0,
+                        R.drawable.ic_next_black, 0);
+            }
+
+            nextStepButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
                     parentActivity.replaceStepDetailsFragment(currentRecipeIndex + 1,
                             recipeStepsDataList, R.id.recipe_steps_fragment_container);
-            }
-        });
+                }
+            });
+        }
 
         return rootView;
     }
@@ -145,6 +152,10 @@ public class RecipeStepDetailsFragment extends Fragment {
         this.currentRecipeIndex = index;
     }
 
+    public int getCurrentRecipeIndex() {
+        return this.currentRecipeIndex;
+    }
+
     public void setTwoPaneDisplay(boolean twoPaneDisplay) {
         isTwoPaneDisplay = twoPaneDisplay;
     }
@@ -155,17 +166,18 @@ public class RecipeStepDetailsFragment extends Fragment {
                 player = ExoPlayerFactory.newSimpleInstance(new DefaultRenderersFactory(getContext()),
                         new DefaultTrackSelector(), new DefaultLoadControl());
 
-                playerView.setPlayer(player);
                 player.setPlayWhenReady(true);
             }
             // Prepare Media Source
             Uri uri = Uri.parse(videoUrl);
             MediaSource mediaSource = buildMediaSource(uri);
             player.prepare(mediaSource);
+
             player.seekTo(playbackPosition);
-        } else {
+            playerView.setResizeMode(AspectRatioFrameLayout.RESIZE_MODE_FILL);
+            playerView.setPlayer(player);
+        } else
             playerView.setVisibility(View.GONE);
-        }
     }
 
     private MediaSource buildMediaSource(Uri uri) {
@@ -178,10 +190,11 @@ public class RecipeStepDetailsFragment extends Fragment {
      * Save the current state of this fragment
      */
     @Override
-    public void onSaveInstanceState(Bundle currentState) {
+    public void onSaveInstanceState(@NonNull Bundle currentState) {
         currentState.putParcelableArrayList(RECIPE_STEP_DATA_KEY, recipeStepsDataList);
         currentState.putInt(RECIPE_STEP_INDEX_KEY, currentRecipeIndex);
-        playbackPosition = player.getCurrentPosition();
+        if (player != null)
+            playbackPosition = player.getCurrentPosition();
         currentState.putLong(RECIPE_STEP_SEEK_POS_KEY, playbackPosition);
         currentState.putBoolean(TWO_PANE_VIEW_KEY, isTwoPaneDisplay);
     }
@@ -197,7 +210,6 @@ public class RecipeStepDetailsFragment extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
-        //hideSystemUi();
         if ((Util.SDK_INT <= 23 || player == null)) {
             initializePlayer(currentRecipeStep.getStepVideoUrl());
         }
@@ -225,16 +237,6 @@ public class RecipeStepDetailsFragment extends Fragment {
             player = null;
         }
     }
-
-//    @SuppressLint("InlinedApi")
-//    private void hideSystemUi() {
-//        playerView.setSystemUiVisibility(View.SYSTEM_UI_FLAG_LOW_PROFILE
-//                | View.SYSTEM_UI_FLAG_FULLSCREEN
-//                | View.SYSTEM_UI_FLAG_LAYOUT_STABLE
-//                | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY
-//                | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
-//                | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION);
-//    }
 
     private int calculateVideoPlayerHeight() {
         DisplayMetrics displayMetrics = resources.getDisplayMetrics();
