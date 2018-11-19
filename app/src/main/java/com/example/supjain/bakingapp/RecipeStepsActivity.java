@@ -17,9 +17,12 @@ public class RecipeStepsActivity extends AppCompatActivity implements RecipeStep
     public static final String RECIPE_DATA_OBJ_KEY = "RecipeDataObj";
     private static final String RECIPE_STEPS_FRAGMENT_TAG = "RecipeStepsFragment";
     private static final String RECIPE_STEPS_DETAILS_FRAGMENT_TAG = "RecipeStepDetailsFragment";
+    private static final String RECIPE_STEP_INDEX_KEY = "RecipeStepIndexKey";
 
     private RecipeData recipeData;
     private boolean isTwoPaneDisplay;
+    private int currentStepIndex;
+    private RecipeStepsAdapter recipeStepsAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -30,6 +33,9 @@ public class RecipeStepsActivity extends AppCompatActivity implements RecipeStep
         recipeData = intent.getParcelableExtra(RECIPE_DATA_OBJ_KEY);
         this.setTitle(recipeData.getRecipeName());
 
+        recipeStepsAdapter = new RecipeStepsAdapter(this);
+        recipeStepsAdapter.setRecipeData(recipeData);
+
         if (findViewById(R.id.two_pane_display) != null) {
             isTwoPaneDisplay = true;
             // Only create new fragments when there is no previously saved state
@@ -37,11 +43,24 @@ public class RecipeStepsActivity extends AppCompatActivity implements RecipeStep
                 addStepListFragment(R.id.step_list_fragment);
                 replaceStepDetailsFragment(0, recipeData.getRecipeSteps(),
                         R.id.step_detail_fragment);
+            } else {
+                Fragment fragment = getSupportFragmentManager().findFragmentByTag(RECIPE_STEPS_FRAGMENT_TAG);
+                if (fragment instanceof RecipeStepsFragment) {
+                    ((RecipeStepsFragment) fragment).setRecipeStepsAdapter(recipeStepsAdapter);
+
+                    currentStepIndex = savedInstanceState.getInt(RECIPE_STEP_INDEX_KEY);
+                    setSelectedRecipeStepIndex(currentStepIndex);
+                }
             }
         } else {
             isTwoPaneDisplay = false;
             if (savedInstanceState == null)
                 addStepListFragment(R.id.recipe_steps_fragment_container);
+            else {
+                Fragment fragment = getSupportFragmentManager().findFragmentByTag(RECIPE_STEPS_FRAGMENT_TAG);
+                if (fragment instanceof RecipeStepsFragment)
+                    ((RecipeStepsFragment) fragment).setRecipeStepsAdapter(recipeStepsAdapter);
+            }
         }
     }
 
@@ -72,7 +91,7 @@ public class RecipeStepsActivity extends AppCompatActivity implements RecipeStep
 
     private void addStepListFragment(int containerId) {
         RecipeStepsFragment recipeStepsFragment = new RecipeStepsFragment();
-        recipeStepsFragment.setRecipeData(recipeData);
+        recipeStepsFragment.setRecipeStepsAdapter(recipeStepsAdapter);
 
         FragmentManager fragmentManager = getSupportFragmentManager();
         fragmentManager.beginTransaction()
@@ -80,10 +99,12 @@ public class RecipeStepsActivity extends AppCompatActivity implements RecipeStep
                 .commit();
     }
 
-    public void setSelectedRecipeStepIndex(int index) {
-        Fragment fragment = getSupportFragmentManager().findFragmentByTag(RECIPE_STEPS_FRAGMENT_TAG);
-        if (fragment instanceof RecipeStepsFragment)
-            ((RecipeStepsFragment) fragment).setSelectedRecipeStepIndex(index);
+    private void setSelectedRecipeStepIndex(int index) {
+        this.currentStepIndex = index;
+        if (recipeStepsAdapter != null) {
+            recipeStepsAdapter.setLastSelectedPositionId(index);
+            recipeStepsAdapter.notifyDataSetChanged();
+        }
     }
 
     @Override
@@ -94,5 +115,11 @@ public class RecipeStepsActivity extends AppCompatActivity implements RecipeStep
             int stepIndex = ((RecipeStepDetailsFragment) fragment).getCurrentRecipeIndex();
             setSelectedRecipeStepIndex(stepIndex);
         }
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putInt(RECIPE_STEP_INDEX_KEY, currentStepIndex);
     }
 }
