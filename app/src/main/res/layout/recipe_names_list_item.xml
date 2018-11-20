@@ -1,62 +1,64 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
 
     <data>
+
         <import type="java.lang.Integer" />
 
         <variable
             name="recipe"
-            type="com.example.supjain.bakingapp.data.RecipeData"/>
+            type="com.example.supjain.bakingapp.data.RecipeData" />
     </data>
 
-    <android.support.v7.widget.CardView
+    <androidx.cardview.widget.CardView
+        android:id="@+id/recipe_card_container"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_margin="@dimen/margin_small"
         app:cardBackgroundColor="@android:color/white">
 
         <LinearLayout
-            android:orientation="vertical"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_margin="@dimen/margin_small">
+            android:layout_margin="@dimen/margin_small"
+            android:orientation="vertical">
 
-        <ImageView
-            android:layout_width="180dp"
-            android:layout_height="180dp"
-            android:id="@+id/recipe_name_image"
-            app:imageUrl="@{recipe.recipeImageUrl}"
-            app:error="@{@drawable/ic_no_image}"
-            android:scaleType="center"
-            android:layout_gravity="center"
-            android:contentDescription="@string/recipe_image_content_desc"/>
+            <ImageView
+                android:id="@+id/recipe_name_image"
+                android:layout_width="@dimen/recipe_card_img_width"
+                android:layout_height="@dimen/recipe_card_img_height"
+                android:layout_gravity="center"
+                android:contentDescription="@string/recipe_image_content_desc"
+                android:scaleType="center"
+                app:error="@{@drawable/ic_no_image}"
+                app:imageUrl="@{recipe.recipeImageUrl}" />
 
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:id="@+id/recipe_name_text"
-            android:layout_marginTop="@dimen/margin_small"
-            tools:text="@string/dummy_recipe_name"
-            android:textAppearance="?android:textAppearanceMedium"
-            android:textStyle="bold"
-            android:textColor="@color/colorPrimaryDark"
-            android:gravity="center"
-            android:text="@{recipe.recipeName}"/>
+            <TextView
+                android:id="@+id/recipe_name_text"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/margin_small"
+                android:gravity="center"
+                android:text="@{recipe.recipeName}"
+                android:textAppearance="?android:textAppearanceMedium"
+                android:textColor="@color/colorPrimaryDark"
+                android:textStyle="bold"
+                tools:text="@string/dummy_recipe_name" />
 
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:id="@+id/recipe_serves_text"
-            tools:text="@string/dummy_serving_size_text"
-            android:gravity="center"
-            android:textColor="@color/colorPrimary"
-            android:textAppearance="?android:textAppearanceMedium"
-            android:text="@{`Serves: `+ Integer.toString(recipe.recipeServings)}"/>
+            <TextView
+                android:id="@+id/recipe_serves_text"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:text="@{`Serves: `+ Integer.toString(recipe.recipeServings)}"
+                android:textAppearance="?android:textAppearanceMedium"
+                android:textColor="@color/colorPrimary"
+                tools:text="@string/dummy_serving_size_text" />
 
         </LinearLayout>
 
-    </android.support.v7.widget.CardView>
+    </androidx.cardview.widget.CardView>
 
 </layout>

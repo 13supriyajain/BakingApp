@@ -8,21 +8,27 @@ import com.google.gson.annotations.SerializedName;
 /**
  * This class object holds all the recipe step details for each step of a recipe.
  */
-
 public class RecipeStepsData implements Parcelable {
 
+    public static final Creator<RecipeStepsData> CREATOR = new Creator<RecipeStepsData>() {
+        @Override
+        public RecipeStepsData createFromParcel(Parcel in) {
+            return new RecipeStepsData(in);
+        }
+
+        @Override
+        public RecipeStepsData[] newArray(int size) {
+            return new RecipeStepsData[size];
+        }
+    };
     @SerializedName("id")
     private int stepId;
-
     @SerializedName("shortDescription")
     private String stepShortDescription;
-
     @SerializedName("description")
     private String stepDescription;
-
     @SerializedName("videoURL")
     private String stepVideoUrl;
-
     @SerializedName("thumbnailURL")
     private String stepThumbnailUrl;
 
@@ -35,40 +41,48 @@ public class RecipeStepsData implements Parcelable {
         this.stepThumbnailUrl = stepThumbnailUrl;
     }
 
+    protected RecipeStepsData(Parcel in) {
+        stepId = in.readInt();
+        stepShortDescription = in.readString();
+        stepDescription = in.readString();
+        stepVideoUrl = in.readString();
+        stepThumbnailUrl = in.readString();
+    }
+
     public int getStepId() {
         return stepId;
-    }
-
-    public String getStepShortDescription() {
-        return stepShortDescription;
-    }
-
-    public String getStepDescription() {
-        return stepDescription;
-    }
-
-    public String getStepVideoUrl() {
-        return stepVideoUrl;
-    }
-
-    public String getStepThumbnailUrl() {
-        return stepThumbnailUrl;
     }
 
     public void setStepId(int stepId) {
         this.stepId = stepId;
     }
 
+    public String getStepShortDescription() {
+        return stepShortDescription;
+    }
+
     public void setStepShortDescription(String stepShortDescription) {
         this.stepShortDescription = stepShortDescription;
+    }
+
+    public String getStepDescription() {
+        return stepDescription;
     }
 
     public void setStepDescription(String stepDescription) {
         this.stepDescription = stepDescription;
     }
 
+    public String getStepVideoUrl() {
+        return stepVideoUrl;
+    }
+
     public void setStepVideoUrl(String stepVideoUrl) {
         this.stepVideoUrl = stepVideoUrl;
+    }
+
+    public String getStepThumbnailUrl() {
+        return stepThumbnailUrl;
     }
 
     public void setStepThumbnailUrl(String stepThumbnailUrl) {
@@ -88,24 +102,4 @@ public class RecipeStepsData implements Parcelable {
         dest.writeString(stepVideoUrl);
         dest.writeString(stepThumbnailUrl);
     }
-
-    protected RecipeStepsData(Parcel in) {
-        stepId = in.readInt();
-        stepShortDescription = in.readString();
-        stepDescription = in.readString();
-        stepVideoUrl = in.readString();
-        stepThumbnailUrl = in.readString();
-    }
-
-    public static final Creator<RecipeStepsData> CREATOR = new Creator<RecipeStepsData>() {
-        @Override
-        public RecipeStepsData createFromParcel(Parcel in) {
-            return new RecipeStepsData(in);
-        }
-
-        @Override
-        public RecipeStepsData[] newArray(int size) {
-            return new RecipeStepsData[size];
-        }
-    };
 }

@@ -4,6 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <data>
+
         <import type="android.view.View" />
 
         <variable
@@ -15,23 +16,23 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:background="@color/colorPrimary"
-        android:padding="@dimen/margin_small" >
+        android:padding="@dimen/margin_small">
 
-        <android.support.v7.widget.RecyclerView
+        <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/recipe_names_recycle_view"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            app:data="@{viewModel.recipeList}"
-            android:visibility="@{(viewModel.recipeList != null || !viewModel.recipeList.isEmpty()) ? View.VISIBLE : View.GONE}"/>
+            android:visibility="@{(viewModel.recipeList != null || !viewModel.recipeList.isEmpty()) ? View.VISIBLE : View.GONE}"
+            app:data="@{viewModel.recipeList}" />
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerInParent="true"
-            android:textColor="@android:color/white"
-            tools:text="@string/no_data_err_msg"
             android:text="@{viewModel.errorMsg}"
-            android:visibility="@{viewModel.errorMsg != null ? View.VISIBLE : View.GONE}" />
+            android:textColor="@android:color/white"
+            android:visibility="@{viewModel.errorMsg != null ? View.VISIBLE : View.GONE}"
+            tools:text="@string/no_data_err_msg" />
 
         <ProgressBar
             android:layout_width="wrap_content"

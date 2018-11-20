@@ -5,7 +5,9 @@ import android.appwidget.AppWidgetManager;
 import android.appwidget.AppWidgetProvider;
 import android.content.Context;
 import android.content.Intent;
-import android.support.v4.app.TaskStackBuilder;
+
+import androidx.core.app.TaskStackBuilder;
+
 import android.widget.RemoteViews;
 
 import com.example.supjain.bakingapp.R;
@@ -23,7 +25,7 @@ public class RecipeWidgetProvider extends AppWidgetProvider {
         Intent intent = new Intent(context, RecipeStepsActivity.class);
         intent.putExtra(RecipeStepsActivity.RECIPE_DATA_OBJ_KEY, data);
 
-       // Use TaskStackBuilder to build the back stack and get the PendingIntent
+        // Use TaskStackBuilder to build the back stack and get the PendingIntent
         PendingIntent pendingIntent =
                 TaskStackBuilder.create(context)
                         // add all of RecipeStepsActivity's parents to the stack (MainActivity),
@@ -42,11 +44,13 @@ public class RecipeWidgetProvider extends AppWidgetProvider {
     }
 
     public static void updateAppWidgets(Context context, AppWidgetManager appWidgetManager,
-                                          RecipeData data, int[] appWidgetIds) {
+                                        RecipeData data, int[] appWidgetIds) {
         for (int appWidgetId : appWidgetIds)
             updateAppWidget(context, appWidgetManager, data, appWidgetId);
     }
 
+    // This method takes list of ingredients data and return a String containing information
+    // about all ingredients of the recipe, to be displayed in the widget.
     private static String getIngredientsList(List<RecipeIngredientsData> dataList) {
         String ingredientsList = "Ingredients: ";
         if (dataList != null && !dataList.isEmpty()) {

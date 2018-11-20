@@ -1,24 +1,29 @@
 package com.example.supjain.bakingapp;
 
 import android.appwidget.AppWidgetManager;
-import android.arch.lifecycle.ViewModelProviders;
+
+import androidx.databinding.ViewDataBinding;
+import androidx.lifecycle.ViewModelProviders;
+
 import android.content.ComponentName;
 import android.content.Intent;
-import android.databinding.DataBindingUtil;
+
+import androidx.databinding.DataBindingUtil;
+
 import android.os.Bundle;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.GridLayoutManager;
-import android.support.v7.widget.RecyclerView;
+
+import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.supjain.bakingapp.Adapters.RecipeDataAdapter;
 import com.example.supjain.bakingapp.Util.RecipeDataUtil;
 import com.example.supjain.bakingapp.Widget.RecipeWidgetProvider;
 import com.example.supjain.bakingapp.data.RecipeData;
-import com.example.supjain.bakingapp.databinding.ActivityMainBinding;
 
 import java.util.Arrays;
 import java.util.List;
 
+import androidx.recyclerview.widget.GridLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -46,11 +51,11 @@ public class MainActivity extends AppCompatActivity implements RecipeDataAdapter
                 widgetConfigCall = true;
         }
 
-        ActivityMainBinding binding = DataBindingUtil.setContentView(this, R.layout.activity_main);
+        ViewDataBinding binding = DataBindingUtil.setContentView(this, R.layout.activity_main);
         binding.setLifecycleOwner(this);
 
         recipeViewModel = ViewModelProviders.of(this).get(RecipeViewModel.class);
-        binding.setViewModel(recipeViewModel);
+        binding.setVariable(BR.viewModel, recipeViewModel);
 
         RecyclerView recyclerView = findViewById(R.id.recipe_names_recycle_view);
         RecipeDataAdapter recipeDataAdapter = new RecipeDataAdapter(this);
@@ -65,6 +70,8 @@ public class MainActivity extends AppCompatActivity implements RecipeDataAdapter
         binding.executePendingBindings();
     }
 
+    // Fetch latest recipe data from server via network call on background thread,
+    // In case of an error show appropriate error message.
     private void fetchAndSetRecipeList() {
         if (RecipeDataUtil.hasNetworkConnection(this)) {
             Retrofit retrofit = RecipeDataUtil.getRetrofitInstance();
@@ -83,8 +90,7 @@ public class MainActivity extends AppCompatActivity implements RecipeDataAdapter
                     t.printStackTrace();
                     if (recipeViewModel.recipeList.getValue() == null || recipeViewModel.recipeList.getValue().isEmpty()) {
                         recipeViewModel.setErrorMsg(getResources().getString(R.string.no_data_err_msg));
-                    }
-                    else
+                    } else
                         recipeViewModel.setErrorMsg(null);
                 }
             });

@@ -8,4 +8,8 @@
     <dimen name="padding_small">8dp</dimen>
     <dimen name="master_list_width">300dp</dimen>
     <dimen name="divider_view_width">1dp</dimen>
+    <dimen name="recipe_card_img_width">180dp</dimen>
+    <dimen name="recipe_card_img_height">180dp</dimen>
+    <dimen name="ingredient_list_height">250dp</dimen>
+    <dimen name="scrollbar_size">16dp</dimen>
 </resources>

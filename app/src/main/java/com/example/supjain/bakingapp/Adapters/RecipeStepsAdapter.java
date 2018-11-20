@@ -2,8 +2,6 @@ package com.example.supjain.bakingapp.Adapters;
 
 import android.content.Context;
 import android.content.res.Resources;
-import android.support.annotation.NonNull;
-import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
@@ -22,6 +20,9 @@ import com.example.supjain.bakingapp.data.RecipeStepsData;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import androidx.annotation.NonNull;
+import androidx.recyclerview.widget.RecyclerView;
 
 /**
  * This is a custom Adapter class to set and display recipe Ingredients and steps.
@@ -69,6 +70,7 @@ public class RecipeStepsAdapter extends RecyclerView.Adapter<RecipeStepsAdapter.
                         steps.get(viewPosition).getStepShortDescription();
                 holder.displayStep(stepInfo);
 
+                // For two-pane display, highlight selected recipe step
                 if (viewPosition == lastSelectedPositionId) {
                     if (lastSelectedView != null)
                         lastSelectedView.setSelected(false);
@@ -96,6 +98,7 @@ public class RecipeStepsAdapter extends RecyclerView.Adapter<RecipeStepsAdapter.
                             steps.get(viewPosition - 1).getStepShortDescription();
                     holder.displayStep(stepInfo);
 
+                    // For two-pane display, highlight selected recipe step
                     if (viewPosition == lastSelectedPositionId + 1) {
                         if (lastSelectedView != null)
                             lastSelectedView.setSelected(false);

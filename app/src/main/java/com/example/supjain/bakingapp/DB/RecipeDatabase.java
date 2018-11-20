@@ -1,11 +1,12 @@
 package com.example.supjain.bakingapp.DB;
 
-import android.arch.persistence.room.Database;
-import android.arch.persistence.room.Room;
-import android.arch.persistence.room.RoomDatabase;
 import android.content.Context;
 
 import com.example.supjain.bakingapp.data.RecipeData;
+
+import androidx.room.Database;
+import androidx.room.Room;
+import androidx.room.RoomDatabase;
 
 @Database(entities = {RecipeData.class}, version = 1, exportSchema = false)
 public abstract class RecipeDatabase extends RoomDatabase {

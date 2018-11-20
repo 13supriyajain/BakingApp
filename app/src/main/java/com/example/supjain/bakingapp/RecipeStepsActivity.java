@@ -2,15 +2,16 @@ package com.example.supjain.bakingapp;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
-import android.support.v7.app.AppCompatActivity;
 
 import com.example.supjain.bakingapp.Adapters.RecipeStepsAdapter;
 import com.example.supjain.bakingapp.data.RecipeData;
 import com.example.supjain.bakingapp.data.RecipeStepsData;
 
 import java.util.List;
+
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
 
 public class RecipeStepsActivity extends AppCompatActivity implements RecipeStepsAdapter.RecipeStepsAdapterOnClickHandler {
 
@@ -54,6 +55,7 @@ public class RecipeStepsActivity extends AppCompatActivity implements RecipeStep
             }
         } else {
             isTwoPaneDisplay = false;
+            // Only create new fragments when there is no previously saved state
             if (savedInstanceState == null)
                 addStepListFragment(R.id.recipe_steps_fragment_container);
             else {
@@ -71,7 +73,7 @@ public class RecipeStepsActivity extends AppCompatActivity implements RecipeStep
                     R.id.step_detail_fragment);
         else
             replaceStepDetailsFragment(currentRecipeStepIndex, recipeData.getRecipeSteps(),
-                R.id.recipe_steps_fragment_container);
+                    R.id.recipe_steps_fragment_container);
     }
 
     public void replaceStepDetailsFragment(int currentRecipeStepIndex, List<RecipeStepsData> dataList, int containerId) {
@@ -107,6 +109,8 @@ public class RecipeStepsActivity extends AppCompatActivity implements RecipeStep
         }
     }
 
+    // This method implementation ensures that when back button is pressed, in two-pane display,
+    // current selected step is highlighted in master-list view.
     @Override
     public void onBackPressed() {
         super.onBackPressed();

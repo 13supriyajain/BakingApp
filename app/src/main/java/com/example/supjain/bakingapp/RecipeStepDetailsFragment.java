@@ -4,8 +4,6 @@ import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.net.Uri;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
-import android.support.v4.app.Fragment;
 import android.text.TextUtils;
 import android.util.DisplayMetrics;
 import android.view.LayoutInflater;
@@ -31,6 +29,9 @@ import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import androidx.annotation.NonNull;
+import androidx.fragment.app.Fragment;
 
 /**
  * This fragment inflates layout file to display recipe step details like
@@ -70,6 +71,8 @@ public class RecipeStepDetailsFragment extends Fragment {
 
         View rootView = inflater.inflate(R.layout.fragment_recipe_step_details, container, false);
 
+        // In landscape mode set height of the video player to match parent,
+        // else calculate the height based on device's height and screen density
         playerView = rootView.findViewById(R.id.video_player);
         ViewGroup.LayoutParams params = playerView.getLayoutParams();
         if (resources.getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE)
@@ -92,21 +95,22 @@ public class RecipeStepDetailsFragment extends Fragment {
             // then hide the ImageView.
             if (stepImageView.getDrawable() == null)
                 stepImageView.setVisibility(View.GONE);
-        }
-        else
+        } else
             stepImageView.setVisibility(View.GONE);
 
 
         Button previousStepButton = rootView.findViewById(R.id.previous_step_btn);
         Button nextStepButton = rootView.findViewById(R.id.next_step_btn);
 
+        // In case of two-pane display, hide navigation buttons
         if (isTwoPaneDisplay) {
-             previousStepButton.setVisibility(View.GONE);
-             nextStepButton.setVisibility(View.GONE);
+            previousStepButton.setVisibility(View.GONE);
+            nextStepButton.setVisibility(View.GONE);
         } else {
             previousStepButton.setVisibility(View.VISIBLE);
             nextStepButton.setVisibility(View.VISIBLE);
 
+            // If displaying first step of recipe, disable 'Previous' button
             if (currentRecipeIndex == 0) {
                 previousStepButton.setEnabled(false);
                 previousStepButton.setBackgroundColor(resources.getColor(R.color.gray));
@@ -123,6 +127,7 @@ public class RecipeStepDetailsFragment extends Fragment {
                 }
             });
 
+            // If displaying last step of recipe, disable 'Next' button
             if (currentRecipeIndex == recipeStepsDataList.size() - 1) {
                 nextStepButton.setEnabled(false);
                 nextStepButton.setBackgroundColor(resources.getColor(R.color.gray));
@@ -143,27 +148,29 @@ public class RecipeStepDetailsFragment extends Fragment {
         return rootView;
     }
 
-    public void setRecipeStepsDataList(List<RecipeStepsData> dataList) {
+    void setRecipeStepsDataList(List<RecipeStepsData> dataList) {
         this.recipeStepsDataList = (ArrayList<RecipeStepsData>) dataList;
     }
 
-    public void setCurrentRecipeIndex(int index) {
-        this.currentRecipeIndex = index;
-    }
-
-    public int getCurrentRecipeIndex() {
+    int getCurrentRecipeIndex() {
         return this.currentRecipeIndex;
     }
 
-    public void setTwoPaneDisplay(boolean twoPaneDisplay) {
+    void setCurrentRecipeIndex(int index) {
+        this.currentRecipeIndex = index;
+    }
+
+    void setTwoPaneDisplay(boolean twoPaneDisplay) {
         isTwoPaneDisplay = twoPaneDisplay;
     }
 
     private void initializePlayer(String videoUrl) {
+        // If video url is valid, and player obj is null, then create a new instance.
         if (!TextUtils.isEmpty(videoUrl)) {
             if (player == null) {
                 player = ExoPlayerFactory.newSimpleInstance(new DefaultRenderersFactory(getContext()),
-                        new DefaultTrackSelector(), new DefaultLoadControl());
+                        new DefaultTrackSelector(),
+                        new DefaultLoadControl());
 
                 player.setPlayWhenReady(true);
             }

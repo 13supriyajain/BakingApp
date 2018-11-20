@@ -10,12 +10,21 @@ import com.google.gson.annotations.SerializedName;
  */
 public class RecipeIngredientsData implements Parcelable {
 
+    public static final Creator<RecipeIngredientsData> CREATOR = new Creator<RecipeIngredientsData>() {
+        @Override
+        public RecipeIngredientsData createFromParcel(Parcel in) {
+            return new RecipeIngredientsData(in);
+        }
+
+        @Override
+        public RecipeIngredientsData[] newArray(int size) {
+            return new RecipeIngredientsData[size];
+        }
+    };
     @SerializedName("quantity")
     private float ingredientQuantity;
-
     @SerializedName("measure")
     private String ingredientMeasure;
-
     @SerializedName("ingredient")
     private String ingredientName;
 
@@ -23,6 +32,12 @@ public class RecipeIngredientsData implements Parcelable {
         this.ingredientQuantity = ingredientQuantity;
         this.ingredientMeasure = ingredientMeasure;
         this.ingredientName = ingredientName;
+    }
+
+    protected RecipeIngredientsData(Parcel in) {
+        ingredientQuantity = in.readFloat();
+        ingredientMeasure = in.readString();
+        ingredientName = in.readString();
     }
 
     @Override
@@ -34,20 +49,20 @@ public class RecipeIngredientsData implements Parcelable {
         return ingredientQuantity;
     }
 
-    public String getIngredientMeasure() {
-        return ingredientMeasure;
-    }
-
-    public String getIngredientName() {
-        return ingredientName;
-    }
-
     public void setIngredientQuantity(float ingredientQuantity) {
         this.ingredientQuantity = ingredientQuantity;
     }
 
+    public String getIngredientMeasure() {
+        return ingredientMeasure;
+    }
+
     public void setIngredientMeasure(String ingredientMeasure) {
         this.ingredientMeasure = ingredientMeasure;
+    }
+
+    public String getIngredientName() {
+        return ingredientName;
     }
 
     public void setIngredientName(String ingredientName) {
@@ -65,22 +80,4 @@ public class RecipeIngredientsData implements Parcelable {
         dest.writeString(ingredientMeasure);
         dest.writeString(ingredientName);
     }
-
-    protected RecipeIngredientsData(Parcel in) {
-        ingredientQuantity = in.readFloat();
-        ingredientMeasure = in.readString();
-        ingredientName = in.readString();
-    }
-
-    public static final Creator<RecipeIngredientsData> CREATOR = new Creator<RecipeIngredientsData>() {
-        @Override
-        public RecipeIngredientsData createFromParcel(Parcel in) {
-            return new RecipeIngredientsData(in);
-        }
-
-        @Override
-        public RecipeIngredientsData[] newArray(int size) {
-            return new RecipeIngredientsData[size];
-        }
-    };
 }
